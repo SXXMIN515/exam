@@ -5,52 +5,81 @@ const mysql = require("../database/mapper.js");
 
 // 전체조회
 const findAll = async () => {
-  let list = await mysql.query("selectboardList")
-                      .catch((err) => {
-                          console.log(err);
-                          return { err: "DB조회중 오류발생" };
-                });
+  let list = await mysql.query("selectboardList").catch((err) => {
+    console.log(err);
+    return { err: "DB조회중 오류발생" };
+  });
   return list;
 };
 
 // 단건조회
-const findByNo = async (boardNo)=>{
-  let list = await mysql.query("selectboardOne", boardNo)
-                      .catch(err=> console.log(err));
+const findByNo = async (boardNo) => {
+  let list = await mysql
+    .query("selectboardOne", boardNo)
+    .catch((err) => console.log(err));
   let info = list[0];
   return info;
-}
+};
 
 // 등록
 
-const createBoard = async (boardInfo)=>{
+const createBoard = async (boardInfo) => {
   // insertData =  [ title, writer, content, created_dt ]
   let insertData = getInsertInfo(boardInfo);
-  let result = await mysql.query("boardInsert", insertData)
-                .catch(err=> console.log(err));
+  let result = await mysql
+    .query("boardInsert", insertData)
+    .catch((err) => console.log(err));
   let resObj = {};
-  if(result.insertId > 0){ // AUTO_INCREMENT가 적용된 PK값이 반환
-    resObj = { result : true, bno : result.insertId};
+  if (result.insertId > 0) {
+    // AUTO_INCREMENT가 적용된 PK값이 반환
+    resObj = { result: true, bno: result.insertId };
   } else {
-    resObj = { result : false };
+    resObj = { result: false };
   }
   return resObj;
-}
+};
 
-function getInsertInfo(info){
+function getInsertInfo(info) {
   let aray = [];
   aray.push(info.title);
   aray.push(info.writer);
   aray.push(info.content);
   aray.push(info.created_dt);
-  return aray;  
-};
+  return aray;
+}
 
 // 수정
+const updateBoard = async (boardInfo, boardNo) => {
+  // updateObj, boardNo = [{"title":"수정된 제목","writer":"관리자","content":"수정된 내용입니다"},'104']
+  const updateObj = {
+    title: boardInfo.title,
+    writer: boardInfo.writer,
+    content: boardInfo.content,
+  };
+  let result = await mysql
+    .query("boardUpdate", [updateObj, boardNo])
+    .catch((err) => console.log(err));
+  let resObj = {};
+  if (result.affectedRows > 0) {
+    resObj = { result: true, bno: boardNo };
+  } else {
+    resObj = { result: false, bno: boardNo };
+  }
+  return resObj;
+};
+
+function getUpdateInfo(info) {
+  let aray = [];
+  aray.push(info.title);
+  aray.push(info.writer);
+  aray.push(info.content);
+  return aray;
+}
 
 // 삭제
 module.exports = {
   findAll,
   findByNo,
   createBoard,
+  updateBoard,
 };

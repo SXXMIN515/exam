@@ -8,7 +8,7 @@
         </tr>
         <tr>
           <th class="text-right">작성일</th>
-          <td class="text-center">{{ dateFormat(boardInfo.created_dt, "yyyy-MM-dd") }}</td>
+          <td class="text-center">{{ dateFormat(boardInfo.created_date, "yyyy-MM-dd") }}</td>
         </tr>
         <tr>
           <th class="text-right">제목</th>
@@ -35,33 +35,17 @@
 <script setup>
 import CommentComponent from "../components/CommentComponent.vue";
 import dateFormat from "@/utils/dateFormat.js";
-import { onBeforeMount, ref } from "vue";
+import { onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
 import axios from "axios";
-import { useRoute, useRouter } from "vue-router";
-const route = useRoute();
-const router = useRouter();
 
-let boardInfo = ref({}); // 게시글 정보
-const getBoardInfo = async (bno) => {
-  // 단건조회   http://localhost:3000/boards/100
-  let result = await axios.get(`/api/boards/${bno}`).catch((err) => console.log(err));
-  boardInfo.value = result.data;
-};
-onBeforeMount(() => {
-  const boardNo = route.query.no;
-  getBoardInfo(boardNo);
+const route = useRoute(); // 라우트 정보 접근
+
+const boardInfo = ref({});
+
+onMounted(async () => {
+  const result = await axios.get(`http://localhost:3000/board/${route.query.no}`);
+  console.log("Post Data:", result.data);
+  boardInfo.value = result.data[0];
 });
-
-const goToboardUpdate = () => {
-  router.push({
-    name: "boardUpdate",
-    query: {
-      no: boardInfo.value.no,
-      title: boardInfo.value.title,
-      writer: boardInfo.value.writer,
-      content: boardInfo.value.content,
-      created_dt: boardInfo.value.created_dt,
-    },
-  });
-};
 </script>

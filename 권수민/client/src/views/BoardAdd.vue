@@ -24,36 +24,29 @@
 <script setup>
 import BoardForm from "@/components/BoardForm.vue";
 import { reactive, computed } from "vue";
-import dateFormat from "@/utils/dateFormat";
 import axios from "axios";
+// import dateFormat from "@/utils/dateFormat";
 
 const boardInfo = reactive({
   no: "",
   title: "",
   writer: "",
   content: "",
-  created_dt: new Date(),
 });
 
 const formattedDate = computed(() => {
-  return dateFormat(boardInfo.created_dt, "yyyy-MM-dd");
+  if (boardInfo.value.write_date) return new Date(boardInfo.value.write_date).toLocaleString();
+  return "";
 });
 
-const addBoard = async () => {
-  let obj = {
-    title: boardInfo.title,
-    writer: boardInfo.writer,
-    content: boardInfo.content,
-    created_dt: formattedDate.value,
-  };
-
-  let result = await axios.post(`/api/boards`, obj).catch((err) => console.log(err));
-
-  let addRes = result.data;
-  if (addRes.result) {
-    alert("게시글이 추가되었습니다.");
-  } else {
-    alert("게시글 수정에 실패하였습니다.");
-  }
+const addBoard = () => {
+  axios
+    .post("http://localhost:3000/board")
+    .then((resp) => {
+      console.log(resp);
+      boardInfo.value = resp.data;
+      console.log(boardInfo.value);
+    })
+    .catch((err) => console.log(err));
 };
 </script>
