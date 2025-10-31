@@ -25,7 +25,8 @@ const findByNo = async (boardNo) => {
 
 const createBoard = async (boardInfo) => {
   // insertData =  [ title, writer, content, created_dt ]
-  let insertData = getInsertInfo(boardInfo);
+  const selected = ["title", "writer", "content", "created_dt"];
+  let insertData = getInsertInfo(boardInfo, selected);
   let result = await mysql
     .query("boardInsert", insertData)
     .catch((err) => console.log(err));
@@ -48,16 +49,26 @@ function getInsertInfo(info) {
   return aray;
 }
 
+function getInsertInfo(target, selected) {
+  let info = [];
+  for (let column of selected) {
+    let value = target[column];
+    info.push(value);
+  }
+  return info;
+}
+
 // 수정
-const updateBoard = async (boardInfo, boardNo) => {
+const modifyBoard = async (boardInfo, boardNo) => {
   // updateObj, boardNo = [{"title":"수정된 제목","writer":"관리자","content":"수정된 내용입니다"},'104']
-  const updateObj = {
-    title: boardInfo.title,
-    writer: boardInfo.writer,
-    content: boardInfo.content,
-  };
+  let updateData = [boardInfo, boardNo];
+  // const updateObj = {
+  //   title: boardInfo.title,
+  //   writer: boardInfo.writer,
+  //   content: boardInfo.content,
+  // };
   let result = await mysql
-    .query("boardUpdate", [updateObj, boardNo])
+    .query("boardUpdate", updateData)
     .catch((err) => console.log(err));
   let resObj = {};
   if (result.affectedRows > 0) {
@@ -68,18 +79,10 @@ const updateBoard = async (boardInfo, boardNo) => {
   return resObj;
 };
 
-function getUpdateInfo(info) {
-  let aray = [];
-  aray.push(info.title);
-  aray.push(info.writer);
-  aray.push(info.content);
-  return aray;
-}
-
 // 삭제
 module.exports = {
   findAll,
   findByNo,
   createBoard,
-  updateBoard,
+  modifyBoard,
 };

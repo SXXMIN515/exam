@@ -13,6 +13,7 @@
       <textarea class="form-control" v-model="boardInfo.content"></textarea>
     </template>
     <template v-slot:created_date>
+      <!-- yyyy-MM-dd   -->
       <input class="form-control" type="date" v-model="formattedDate" readonly />
     </template>
     <template v-slot:button>
@@ -25,9 +26,6 @@
 import BoardForm from "@/components/BoardForm.vue";
 import { ref, computed, onBeforeMount } from "vue";
 import dateFormat from "@/utils/dateFormat";
-import axios from "axios";
-import { useRoute } from "vue-router";
-const route = useRoute();
 
 const boardInfo = ref({
   no: "",
@@ -41,59 +39,64 @@ const formattedDate = computed(() => {
   return dateFormat(boardInfo.value.created_dt, "yyyy-MM-dd");
 });
 
-const addBoard = async () => {
+import axios from "axios";
+const addBoard = async ()=>{
   let obj = {
-    title: boardInfo.value.title,
+    title : boardInfo.value.title,
     writer: boardInfo.value.writer,
     content: boardInfo.value.content,
     created_dt: formattedDate.value,
   };
 
-  let result = await axios.post(`/api/boards`, obj).catch((err) => console.log(err));
+  let result = await axios.post(`/api/boards`, obj)
+                            .catch(err=>console.log(err));
 
   let addRes = result.data;
-  if (addRes.result) {
+  if(addRes.result){
     alert("게시글이 추가되었습니다.");
     boardInfo.value.no = addRes.bno;
-  } else {
+  }else{
     alert("게시글 추가에 실패하였습니다.");
   }
 };
 
 const isUpdated = ref(false);
-const modifyBoard = async () => {
+const modifyBoard = async ()=>{
   let obj = {
-    title: boardInfo.value.title,
+    title : boardInfo.value.title,
     writer: boardInfo.value.writer,
     content: boardInfo.value.content,
     created_dt: formattedDate.value,
   };
 
-  let result = await axios
-    .put(`/api/boards/${boardInfo.value.no}`, obj)
-    .catch((err) => console.log(err));
+  let result = await axios.put(`/api/boards/${boardInfo.value.no}`, obj)
+                            .catch(err=>console.log(err));
 
-  let modRes = result.data;
-  if (modRes.result) {
+  let addRes = result.data;
+  if(addRes.result){
     alert("게시글이 수정되었습니다.");
-  } else {
+  }else{
     alert("게시글 수정에 실패하였습니다.");
   }
 };
 
-const getBoardInfo = async (bno) => {
-  // 단건조회    http://localhost:3000/boards/100
-  let result = await axios.get(`/api/boards/${bno}`).catch((err) => console.log(err));
-  boardInfo.value = result.data;
+import { useRoute } from "vue-router";
+const route = useRoute();
+
+const getBoardInfo= async(bno) => {
+    // 단건조회    http://localhost:3000/boards/100
+    let result = await  axios.get(`/api/boards/${bno}`)
+                              .catch(err=>console.log(err));
+    boardInfo.value = result.data;
 };
 
-onBeforeMount(() => {
-  const boardNo = route.query.no;
-  if (boardNo > 0) {
-    isUpdated.value = true;
-    getBoardInfo(boardNo);
-  } else {
-    boardInfo.value.created_dt = new Date();
-  }
-});
+onBeforeMount(()=>{
+    const boardNo = route.query.no;
+    if(boardNo > 0){
+      isUpdated.value = true;
+      getBoardInfo(boardNo);
+    }else{
+      boardInfo.value.created_dt = new Date();
+    }
+}); 
 </script>

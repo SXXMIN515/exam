@@ -7,7 +7,7 @@ import FooterComponent from "./layouts/FooterComponent.vue";
 <template>
   <div>
     <HeaderComponent />
-    <RouterView :key="$route.fullPath" />
+    <RouterView />
     <FooterComponent />
   </div>
 </template>

@@ -53,7 +53,15 @@ onBeforeMount(() => {
 });
 
 const goToboardUpdate = () => {
-  const bno = boardInfo.value.no;
-  router.push({ name: "boardAdd", query: { no: bno } });
+  router.push({
+    name: "boardUpdate",
+    query: {
+      no: boardInfo.value.no,
+      title: boardInfo.value.title,
+      writer: boardInfo.value.writer,
+      content: boardInfo.value.content,
+      created_dt: boardInfo.value.created_dt,
+    },
+  });
 };
 </script>

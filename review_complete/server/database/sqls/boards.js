@@ -44,9 +44,8 @@ const boardUpdate = `
 UPDATE board_tbl
 SET ?
 WHERE no = ?`;
-// [객체{}, ?]
-// [{"title":"수정된 제목", "writer":"관리자","content":"수정된 내용입니다"},'104']
-// SET title="수정된 제목", writer="관리자", content="수정된 내용입니다"
+// [{'title' : '', 'writer' : '', ... }, 숫자]
+// SET title='', writer='', ...
 
 // PRIMARY KEY를 활용한 삭제
 const boardDelete = `

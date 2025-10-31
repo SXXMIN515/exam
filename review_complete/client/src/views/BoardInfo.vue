@@ -35,25 +35,29 @@
 <script setup>
 import CommentComponent from "../components/CommentComponent.vue";
 import dateFormat from "@/utils/dateFormat.js";
-import { onBeforeMount, ref } from "vue";
+import { ref, onBeforeMount } from "vue";
 import axios from "axios";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 const route = useRoute();
-const router = useRouter();
 
 let boardInfo = ref({}); // 게시글 정보
-const getBoardInfo = async (bno) => {
-  // 단건조회   http://localhost:3000/boards/100
-  let result = await axios.get(`/api/boards/${bno}`).catch((err) => console.log(err));
-  boardInfo.value = result.data;
+const getBoardInfo= async(bno) => {
+    // 단건조회    http://localhost:3000/boards/100
+    let result = await  axios.get(`/api/boards/${bno}`)
+                              .catch(err=>console.log(err));
+    boardInfo.value = result.data;
 };
-onBeforeMount(() => {
-  const boardNo = route.query.no;
-  getBoardInfo(boardNo);
-});
 
-const goToboardUpdate = () => {
+import { useRouter } from "vue-router";
+const router = useRouter();
+
+const goToboardUpdate = ()=> {
   const bno = boardInfo.value.no;
   router.push({ name: "boardAdd", query: { no: bno } });
 };
+
+onBeforeMount(()=>{
+    const boardNo = route.query.no;
+    getBoardInfo(boardNo);
+});   
 </script>

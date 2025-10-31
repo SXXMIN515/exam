@@ -10,35 +10,39 @@ const boardService = require("../services/board_service.js");
 
 // 실제 라우팅 등록 영역
 //전체조회 : URI = /boards, METHOD = GET
-router.get(`/boards`, async (req, res) => {
-  let list = await boardService.findAll().catch((err) => console.log(err));
-  res.send(list);
+router.get(`/boards`, async (req,res)=>{
+    let list = await boardService.findAll()
+                    .catch(err=> console.log(err));
+    res.send(list);
 });
 //단건조회 : URI = /boards/:bno, METHOD = GET
-router.get(`/boards/:bno`, async (req, res) => {
-  let no = req.params.bno;
-  let info = await boardService.findByNo(no).catch((err) => console.log(err));
-  res.send(info);
+router.get(`/boards/:bno`, async (req,res)=>{
+    let no = req.params.bno;
+    let info = await boardService.findByNo(no)
+                    .catch(err=> console.log(err));
+    res.send(info);
 });
 //등록     : URI = /boards, METHOD = POST
-router.post(`/boards`, async (req, res) => {
+router.post(`/boards`, async (req,res)=>{
   let boardInfo = req.body;
-  let result = await boardService
-    .createBoard(boardInfo)
-    .catch((err) => console.log(err));
-  res.send(result);
+  let result = await boardService.createBoard(boardInfo)
+                  .catch(err=> console.log(err));
+  res.send(result); 
 });
 //수정     : URI = /boards/:bno, METHOD = PUT
-router.put(`/boards/:bno`, async (req, res) => {
+router.put(`/boards/:bno`, async (req,res)=>{
   let no = req.params.bno;
-  let boardInfo = req.body;
-  let result = await boardService
-    .modifyBoard(boardInfo, no)
-    .catch((err) => console.log(err));
-  res.send(result);
+  let boardInfo = req.body;   
+  let result = await boardService.modifyBoard(no, boardInfo)
+                  .catch(err=> console.log(err));
+  res.send(result); 
 });
 
 //삭제     : URI = /boards/:bno, METHOD = DELETE
+
+
+
+
 
 // 해당 javascript 파일의 마지막 코드, 모듈화
 // 위에 선언한 기능(변수, 함수 등)들 중 외부로 노출할 대상을 설정
